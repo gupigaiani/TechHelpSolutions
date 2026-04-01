@@ -5,7 +5,7 @@ using TechHelpSolutions.DTOs;
 using TechHelpSolutions.Models;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/usuarios")]
 public class UsuariosController : ControllerBase
 {
     private readonly AppDbContext _context;

@@ -6,7 +6,7 @@ using TechHelpSolutions.DTOs;
 using TechHelpSolutions.Services;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/chamados")]
 public class ChamadosController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -36,6 +36,26 @@ public class ChamadosController : ControllerBase
             .ToListAsync();
 
         return Ok(chamados);
+    }
+
+    [Authorize]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> ObterPorId(int id)
+    {
+        var chamado = await _context.Chamados
+            .Include(c => c.Usuario)
+            .Include(c => c.Tecnico)
+            .Include(c => c.Categoria)
+            .Include(c => c.Prioridade)
+            .Include(c => c.Status)
+            .Include(c => c.Comentarios)
+                .ThenInclude(com => com.Usuario)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (chamado == null)
+            return NotFound();
+
+        return Ok(chamado);
     }
 
     [Authorize]

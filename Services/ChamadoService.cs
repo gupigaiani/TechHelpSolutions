@@ -45,5 +45,28 @@ namespace TechHelpSolutions.Services
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Comentario> CriarComentario(int chamadoId, int usuarioId, CriarComentarioDTO dto)
+        {
+            var chamado = await _context.Chamados.FindAsync(chamadoId);
+            if (chamado == null)
+                throw new Exception("Chamado não encontrado");
+
+            var usuario = await _context.Usuarios.FindAsync(usuarioId);
+            if (usuario == null)
+                throw new Exception("Usuário não encontrado");
+
+            var comentario = new Comentario
+            {
+                ChamadoId = chamadoId,
+                UsuarioId = usuarioId,
+                Mensagem = dto.Mensagem
+            };
+
+            _context.Comentarios.Add(comentario);
+            await _context.SaveChangesAsync();
+
+            return comentario;
+        }
     }
 }

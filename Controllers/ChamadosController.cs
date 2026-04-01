@@ -83,4 +83,23 @@ public class ChamadosController : ControllerBase
 
         return NoContent();
     }
+
+    [Authorize]
+    [HttpPost("{chamadoId}/comentarios")]
+    public async Task<IActionResult> CriarComentario(int chamadoId, CriarComentarioDTO dto)
+    {
+        var userId = User.FindFirst("UserId")?.Value;
+        if (userId == null)
+            return Unauthorized();
+
+        try
+        {
+            var comentario = await _service.CriarComentario(chamadoId, int.Parse(userId), dto);
+            return Ok(comentario);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }

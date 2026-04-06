@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TechHelpSolutions.DTOs;
 
 [ApiController]
 [Route("api/auth")]
@@ -14,11 +15,11 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login(LoginDTO dto)
     {
-        var token = _authService.Login(dto);
+        AuthLoginResponseDTO? resultado = _authService.Login(dto);
 
-        if (token == null)
-            return Unauthorized("Email ou senha inválidos");
+        if (resultado == null)
+            return Unauthorized("Email ou senha invalidos");
 
-        return Ok(new { token });
+        return Ok(resultado);
     }
 }

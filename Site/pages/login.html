@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - TechHelp Solutions</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen px-4">
+  <div class="max-w-md w-full">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-blue-600 mb-2">TechHelp Solutions</h1>
+        <p class="text-gray-600">Sistema de Gerenciamento de Chamados</p>
+      </div>
+
+      <form id="login-form" class="space-y-6">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">E-mail</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+            </div>
+            <input id="email" name="email" type="email" required class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="seu@email.com">
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Senha</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect width="18" height="11" x="3" y="11" rx="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <input id="password" name="password" type="password" required class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="********">
+          </div>
+        </div>
+
+        <button id="login-submit" type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+          Entrar
+        </button>
+
+        <p id="login-message" class="hidden text-sm rounded-md px-3 py-2"></p>
+      </form>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+          Nao tem uma conta?
+          <a href="./cadastro.html" class="text-blue-600 hover:text-blue-700 font-medium">Cadastre-se</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="./scripts/app.js"></script>
+  <script>
+    const app = window.TechHelpApp;
+    const form = document.getElementById("login-form");
+    const submitButton = document.getElementById("login-submit");
+    const message = document.getElementById("login-message");
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = "text-sm rounded-md px-3 py-2";
+      if (type === "error") {
+        message.classList.add("bg-red-50", "text-red-700", "border", "border-red-200");
+      } else {
+        message.classList.add("bg-green-50", "text-green-700", "border", "border-green-200");
+      }
+    }
+
+    const existingUser = app.getStoredUser();
+    if (existingUser) {
+      app.redirectToHome(existingUser.role);
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      message.className = "hidden";
+      submitButton.disabled = true;
+      submitButton.textContent = "Entrando...";
+
+      try {
+        const response = await fetch(`${app.API_BASE_URL}/api/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: document.getElementById("email").value.trim(),
+            senha: document.getElementById("password").value
+          })
+        });
+
+        const data = await app.readResponse(response);
+        if (!response.ok || !data?.token || !data?.usuario) {
+          throw new Error(typeof data === "string" ? data : "Nao foi possivel fazer login.");
+        }
+
+        app.saveSession(data.token, {
+          userId: data.usuario.id,
+          nome: data.usuario.nome,
+          email: data.usuario.email,
+          role: data.usuario.tipo
+        });
+
+        showMessage("Login realizado com sucesso. Redirecionando...", "success");
+        app.redirectToHome(data.usuario.tipo);
+      } catch (error) {
+        showMessage(error.message || "Erro ao fazer login.", "error");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Entrar";
+      }
+    });
+  </script>
+</body>
+</html>

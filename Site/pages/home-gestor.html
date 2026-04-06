@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Gestor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="min-h-screen bg-gray-50">
+    <header class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center space-x-8">
+            <a href="./home-gestor.html" class="text-xl font-bold text-blue-600">TechHelp Solutions</a>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium" data-user-initials>
+                RC
+              </div>
+              <span class="text-sm text-gray-700" data-user-name>Roberto Costa</span>
+            </div>
+            <button data-logout class="flex items-center space-x-1 px-3 py-2 text-sm text-gray-700 hover:text-red-600 hover:bg-gray-100 rounded-md">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m16 17 5-5-5-5"></path>
+                <path d="M21 12H9"></path>
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              </svg>
+              <span>Sair</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-6">Dashboard do Gestor</h1>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <p id="metric-total" class="text-2xl font-bold">0</p>
+          <p class="text-sm text-gray-600">Total de Chamados</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <p id="metric-open" class="text-2xl font-bold">0</p>
+          <p class="text-sm text-gray-600">Chamados Abertos</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <p id="metric-avg-time" class="text-2xl font-bold">0min</p>
+          <p class="text-sm text-gray-600">Tempo Medio</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <p id="metric-sla" class="text-2xl font-bold">0%</p>
+          <p class="text-sm text-gray-600">SLA Cumprido</p>
+        </div>
+      </div>
+
+      <p id="manager-message" class="mb-6 text-sm text-gray-500">Carregando indicadores...</p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <h2 class="text-lg font-semibold mb-4">Chamados por Dia</h2>
+          <p class="text-gray-500 text-sm">[Grafico aqui - vamos ligar depois]</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <h2 class="text-lg font-semibold mb-4">Chamados por Setor</h2>
+          <p class="text-gray-500 text-sm">[Grafico aqui - vamos ligar depois]</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <h2 class="text-lg font-semibold mb-4">Distribuicao por Status</h2>
+          <p class="text-gray-500 text-sm">[Grafico de pizza aqui - vamos ligar depois]</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border">
+          <h2 class="text-lg font-semibold mb-4">Metricas de Performance</h2>
+
+          <div class="mb-4">
+            <div class="flex justify-between text-sm">
+              <span>Taxa de Resolucao</span>
+              <span id="resolution-rate-label">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 h-2 rounded">
+              <div id="resolution-rate-bar" class="bg-green-600 h-2 rounded" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-sm">
+              <span>Chamados Urgentes</span>
+              <span id="urgent-rate-label">0 / 0</span>
+            </div>
+            <div class="w-full bg-gray-200 h-2 rounded">
+              <div id="urgent-rate-bar" class="bg-red-600 h-2 rounded" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 mt-4">
+            <div>
+              <p class="text-xs text-gray-600">Tempo Medio de Resposta</p>
+              <p id="response-time-label" class="text-lg font-bold">-</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-600">Tempo Medio de Resolucao</p>
+              <p id="resolution-time-label" class="text-lg font-bold">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="./scripts/app.js"></script>
+  <script>
+    const app = window.TechHelpApp;
+    const SLA_HOURS_LIMIT = 24;
+
+    function formatDurationFromMinutes(totalMinutes) {
+      if (!totalMinutes || totalMinutes < 1) {
+        return "0min";
+      }
+
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = Math.round(totalMinutes % 60);
+
+      if (hours > 0 && minutes > 0) {
+        return `${hours}h ${minutes}min`;
+      }
+      if (hours > 0) {
+        return `${hours}h`;
+      }
+      return `${minutes}min`;
+    }
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function setWidth(id, value) {
+      document.getElementById(id).style.width = `${value}%`;
+    }
+
+    function renderMetrics(chamados) {
+      const total = chamados.length;
+      const resolved = chamados.filter((chamado) => {
+        const status = (chamado.status?.nome || "").toLowerCase();
+        return status.includes("final") || status.includes("resolvido");
+      });
+      const openTickets = chamados.filter((chamado) => {
+        const status = (chamado.status?.nome || "").toLowerCase();
+        return !status.includes("final") && !status.includes("resolvido");
+      });
+      const urgent = chamados.filter((chamado) => (chamado.prioridade?.nome || "").toLowerCase().includes("alta"));
+
+      const resolvedDurationsInMinutes = resolved
+        .filter((chamado) => chamado.dataAbertura && chamado.dataFechamento)
+        .map((chamado) => {
+          const openedAt = new Date(chamado.dataAbertura).getTime();
+          const closedAt = new Date(chamado.dataFechamento).getTime();
+          return Math.max(0, (closedAt - openedAt) / 60000);
+        });
+
+      const avgResolutionMinutes = resolvedDurationsInMinutes.length
+        ? resolvedDurationsInMinutes.reduce((sum, value) => sum + value, 0) / resolvedDurationsInMinutes.length
+        : 0;
+
+      const avgResponseMinutes = openTickets.length
+        ? openTickets.reduce((sum, chamado) => {
+            const openedAt = new Date(chamado.dataAbertura).getTime();
+            const now = Date.now();
+            return sum + Math.max(0, (now - openedAt) / 60000);
+          }, 0) / openTickets.length
+        : avgResolutionMinutes;
+
+      const slaMet = resolved.filter((chamado) => {
+        if (!chamado.dataAbertura || !chamado.dataFechamento) {
+          return false;
+        }
+
+        const openedAt = new Date(chamado.dataAbertura).getTime();
+        const closedAt = new Date(chamado.dataFechamento).getTime();
+        const hoursToResolve = (closedAt - openedAt) / 3600000;
+        return hoursToResolve <= SLA_HOURS_LIMIT;
+      }).length;
+
+      const slaRate = resolved.length ? Math.round((slaMet / resolved.length) * 100) : 0;
+      const resolutionRate = total ? Math.round((resolved.length / total) * 100) : 0;
+      const urgentRate = total ? Math.round((urgent.length / total) * 100) : 0;
+
+      setText("metric-total", String(total));
+      setText("metric-open", String(openTickets.length));
+      setText("metric-avg-time", formatDurationFromMinutes(avgResolutionMinutes));
+      setText("metric-sla", `${slaRate}%`);
+
+      setText("resolution-rate-label", `${resolutionRate}%`);
+      setWidth("resolution-rate-bar", resolutionRate);
+
+      setText("urgent-rate-label", `${urgent.length} / ${total}`);
+      setWidth("urgent-rate-bar", urgentRate);
+
+      setText("response-time-label", formatDurationFromMinutes(avgResponseMinutes));
+      setText("resolution-time-label", formatDurationFromMinutes(avgResolutionMinutes));
+    }
+
+    async function loadManagerDashboard() {
+      const response = await app.apiFetch("/api/chamados");
+      const data = await app.readResponse(response);
+
+      if (!response.ok) {
+        throw new Error(typeof data === "string" ? data : "Nao foi possivel carregar os indicadores.");
+      }
+
+      const chamados = Array.isArray(data) ? data : [];
+      renderMetrics(chamados);
+      setText("manager-message", `Indicadores carregados com ${chamados.length} chamados.`);
+    }
+
+    (async () => {
+      const user = await app.requireAuth(["Admin", "Gestor"]);
+      if (!user) {
+        return;
+      }
+
+      app.attachLogout();
+
+      try {
+        await loadManagerDashboard();
+      } catch (error) {
+        setText("manager-message", error.message || "Erro ao carregar o dashboard do gestor.");
+      }
+    })();
+  </script>
+</body>
+</html>

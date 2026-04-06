@@ -143,6 +143,12 @@ public class ChamadosController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
+        if (chamado.TecnicoId == null)
+            return BadRequest("O chamado precisa ser assumido antes de ser finalizado.");
+
+        if (chamado.TecnicoId != userId.Value)
+            return Forbid();
+
         chamado.TecnicoId = userId.Value;
         chamado.StatusId = 3; // Finalizado
         chamado.DataFechamento = DateTime.Now;
@@ -150,6 +156,40 @@ public class ChamadosController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    [Authorize(Roles = "Usuario,Tecnico")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> AtualizarChamado(int id, AtualizarChamadoDTO dto)
+    {
+        var userId = ObterUsuarioIdLogado();
+        if (userId == null)
+            return Unauthorized();
+
+        var chamado = await _context.Chamados
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (chamado == null)
+            return NotFound();
+
+        if (User.IsInRole("Usuario") && chamado.UsuarioId != userId.Value)
+            return Forbid();
+
+        if (string.IsNullOrWhiteSpace(dto.Titulo) ||
+            string.IsNullOrWhiteSpace(dto.Descricao) ||
+            dto.CategoriaId <= 0 ||
+            dto.PrioridadeId <= 0)
+        {
+            return BadRequest("Titulo, descricao, categoria e prioridade sao obrigatorios.");
+        }
+
+        await _service.AtualizarChamado(id, dto);
+
+        var chamadoAtualizado = await CriarQueryBaseChamados()
+            .FirstAsync(c => c.Id == id);
+
+        return Ok(ProjetarChamado(chamadoAtualizado, incluirComentarios: false));
     }
 
     [Authorize]

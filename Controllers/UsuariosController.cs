@@ -17,16 +17,39 @@ public class UsuariosController : ControllerBase
         _context = context;
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> Criar(UsuarioDTO dto)
     {
+        if (string.IsNullOrWhiteSpace(dto.Nome) ||
+            string.IsNullOrWhiteSpace(dto.Email) ||
+            string.IsNullOrWhiteSpace(dto.Senha) ||
+            string.IsNullOrWhiteSpace(dto.Tipo))
+        {
+            return BadRequest("Nome, e-mail, senha e tipo são obrigatórios.");
+        }
+
+        var emailNormalizado = dto.Email.Trim().ToLower();
+        var tipoNormalizado = dto.Tipo.Trim();
+
+        var tiposPermitidos = new[] { "Usuario", "Tecnico", "Admin", "Gestor" };
+        if (!tiposPermitidos.Contains(tipoNormalizado, StringComparer.OrdinalIgnoreCase))
+            return BadRequest("Tipo de usuário inválido.");
+
+        var emailJaExiste = await _context.Usuarios
+            .AnyAsync(u => u.Email.ToLower() == emailNormalizado);
+
+        if (emailJaExiste)
+            return Conflict("Já existe um usuário cadastrado com esse e-mail.");
+
         var usuario = new Usuario
         {
-            Nome = dto.Nome,
-            Email = dto.Email,
+            Nome = dto.Nome.Trim(),
+            Email = emailNormalizado,
             Senha = dto.Senha,
-            Tipo = dto.Tipo
+            Tipo = tipoNormalizado.Equals("Gestor", StringComparison.OrdinalIgnoreCase)
+                ? "Admin"
+                : tipoNormalizado
         };
 
         _context.Usuarios.Add(usuario);

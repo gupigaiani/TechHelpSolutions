@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TechHelpSolutions.Data;
+using TechHelpSolutions.DTOs;
 
 public class AuthService
 {
@@ -14,7 +15,7 @@ public class AuthService
         _context = context;
     }
 
-    public string Login(LoginDTO dto)
+    public AuthLoginResponseDTO? Login(LoginDTO dto)
     {
         var usuario = _context.Usuarios
             .FirstOrDefault(u => u.Email == dto.Email && u.Senha == dto.Senha);
@@ -41,6 +42,17 @@ public class AuthService
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+
+        return new AuthLoginResponseDTO
+        {
+            Token = tokenHandler.WriteToken(token),
+            Usuario = new UsuarioResumoDTO
+            {
+                Id = usuario.Id,
+                Nome = usuario.Nome,
+                Email = usuario.Email,
+                Tipo = usuario.Tipo
+            }
+        };
     }
 }

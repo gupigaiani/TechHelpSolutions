@@ -46,6 +46,23 @@ namespace TechHelpSolutions.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<Chamado> AtualizarChamado(int id, AtualizarChamadoDTO dto)
+        {
+            var chamado = await _context.Chamados.FindAsync(id);
+
+            if (chamado == null)
+                throw new Exception("Chamado não encontrado");
+
+            chamado.Titulo = dto.Titulo;
+            chamado.Descricao = dto.Descricao;
+            chamado.CategoriaId = dto.CategoriaId;
+            chamado.PrioridadeId = dto.PrioridadeId;
+
+            await _context.SaveChangesAsync();
+
+            return chamado;
+        }
+
         public async Task<Comentario> CriarComentario(int chamadoId, int usuarioId, CriarComentarioDTO dto)
         {
             var chamado = await _context.Chamados.FindAsync(chamadoId);

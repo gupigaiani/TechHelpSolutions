@@ -98,6 +98,13 @@ public class ChamadosController : ControllerBase
         if (chamado == null)
             return NotFound();
 
+        var userId = ObterUsuarioIdLogado();
+        if (userId == null)
+            return Unauthorized();
+
+        if (User.IsInRole("Usuario") && chamado.UsuarioId != userId.Value)
+            return Forbid();
+
         return Ok(ProjetarChamado(chamado, incluirComentarios: true));
     }
 
@@ -200,6 +207,16 @@ public class ChamadosController : ControllerBase
         if (userId == null)
             return Unauthorized();
 
+        var chamado = await _context.Chamados
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == chamadoId);
+
+        if (chamado == null)
+            return NotFound();
+
+        if (User.IsInRole("Usuario") && chamado.UsuarioId != userId.Value)
+            return Forbid();
+
         try
         {
             var comentario = await _service.CriarComentario(chamadoId, userId.Value, dto);
@@ -215,9 +232,19 @@ public class ChamadosController : ControllerBase
     [HttpGet("{id}/comentarios")]
     public async Task<IActionResult> ListarComentarios(int id)
     {
-        var chamadoExiste = await _context.Chamados.AnyAsync(c => c.Id == id);
-        if (!chamadoExiste)
+        var chamado = await _context.Chamados
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (chamado == null)
             return NotFound();
+
+        var userId = ObterUsuarioIdLogado();
+        if (userId == null)
+            return Unauthorized();
+
+        if (User.IsInRole("Usuario") && chamado.UsuarioId != userId.Value)
+            return Forbid();
 
         var comentarios = await _context.Comentarios
             .AsNoTracking()

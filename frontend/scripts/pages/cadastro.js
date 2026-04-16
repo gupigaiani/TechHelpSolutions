@@ -1,0 +1,64 @@
+﻿    const API_BASE_URL = "http://localhost:5266";
+
+    const form = document.getElementById("register-form");
+    const submitButton = document.getElementById("register-submit");
+    const message = document.getElementById("register-message");
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = "text-sm rounded-md px-3 py-2";
+      if (type === "error") {
+        message.classList.add("bg-red-50", "text-red-700", "border", "border-red-200");
+      } else {
+        message.classList.add("bg-green-50", "text-green-700", "border", "border-green-200");
+      }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      message.className = "hidden";
+
+      const nome = document.getElementById("nome").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const tipo = document.getElementById("tipo").value;
+      const senha = document.getElementById("senha").value;
+      const confirmarSenha = document.getElementById("confirmar-senha").value;
+
+      if (senha !== confirmarSenha) {
+        showMessage("As senhas nÃ£o conferem.", "error");
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Cadastrando...";
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/usuarios`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ nome, email, senha, tipo })
+        });
+
+        const rawText = await response.text();
+
+        if (!response.ok) {
+          throw new Error(rawText || "NÃ£o foi possÃ­vel concluir o cadastro.");
+        }
+
+        showMessage("Cadastro realizado com sucesso. VocÃª serÃ¡ redirecionado para o login.", "success");
+        form.reset();
+
+        setTimeout(() => {
+          window.location.href = "./login.html";
+        }, 1500);
+      } catch (error) {
+        showMessage(error.message || "Erro ao cadastrar usuÃ¡rio.", "error");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Cadastrar";
+      }
+    });
+  
+

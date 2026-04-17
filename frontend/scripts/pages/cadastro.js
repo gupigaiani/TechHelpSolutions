@@ -47,14 +47,14 @@
           throw new Error(rawText || "NÃ£o foi possÃ­vel concluir o cadastro.");
         }
 
-        showMessage("Cadastro realizado com sucesso. VocÃª serÃ¡ redirecionado para o login.", "success");
+        showMessage("Cadastro realizado com sucesso. Você será redirecionado para o login.", "success");
         form.reset();
 
         setTimeout(() => {
           window.location.href = "./login.html";
         }, 1500);
       } catch (error) {
-        showMessage(error.message || "Erro ao cadastrar usuÃ¡rio.", "error");
+        showMessage(error.message || "Erro ao cadastrar usuário.", "error");
       } finally {
         submitButton.disabled = false;
         submitButton.textContent = "Cadastrar";

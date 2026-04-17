@@ -73,7 +73,7 @@
 
     function renderComments(comentarios) {
       if (!comentarios.length) {
-        commentsMessage.textContent = "Nenhum comentario enviado ainda.";
+        commentsMessage.textContent = "Nenhum comentário enviado ainda.";
         commentsMessage.classList.remove("hidden");
         commentsList.classList.add("hidden");
         return;

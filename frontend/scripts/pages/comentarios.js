@@ -34,7 +34,7 @@
       if (normalized.includes("alta")) {
         return "bg-red-100 text-red-800";
       }
-      if (normalized.includes("media") || normalized.includes("mÃ©dia")) {
+      if (normalized.includes("media") || normalized.includes("média")) {
         return "bg-yellow-100 text-yellow-800";
       }
       return "bg-green-100 text-green-800";
@@ -42,12 +42,12 @@
 
     function roleLabel(role) {
       if (role === "Tecnico") {
-        return "Tecnico";
+        return "Técnico";
       }
       if (role === "Admin") {
         return "Gestor";
       }
-      return "Usuario";
+      return "Usuário";
     }
 
     function showFormMessage(text, type) {
@@ -87,7 +87,7 @@
           <div class="flex ${isMine ? "justify-end" : "justify-start"}">
             <div class="max-w-2xl rounded-2xl px-4 py-3 shadow-sm ${isMine ? "bg-blue-600 text-white" : "bg-white border border-gray-200 text-gray-800"}">
               <div class="flex items-center justify-between gap-4 text-xs ${isMine ? "text-blue-100" : "text-gray-500"} mb-2">
-                <span class="font-semibold">${comentario.usuario?.nome || "Usuario"} • ${roleLabel(comentario.usuario?.tipo)}</span>
+                <span class="font-semibold">${comentario.usuario?.nome || "Usuário"} • ${roleLabel(comentario.usuario?.tipo)}</span>
                 <span>${app.formatDate(comentario.dataEnvio)}</span>
               </div>
               <p class="text-sm whitespace-pre-wrap">${comentario.mensagem}</p>
@@ -139,7 +139,7 @@
         }
 
         commentInput.value = "";
-        showFormMessage("Comentario enviado com sucesso.", "success");
+        showFormMessage("Comentário enviado com sucesso.", "success");
         await loadComments();
       } catch (error) {
         showFormMessage(error.message || "Erro ao enviar comentario.", "error");
@@ -175,4 +175,3 @@
       }
     })();
   
-

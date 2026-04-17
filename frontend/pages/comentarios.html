@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comentarios - TechHelp</title>
+  <title>Comentários - TechHelp</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="../styles/common.css">
   <link rel="stylesheet" href="../styles/pages/comentarios.css">
@@ -21,7 +21,7 @@
             <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium" data-user-initials>
               TH
             </div>
-            <span class="text-sm text-gray-700" data-user-name>Usuario</span>
+            <span class="text-sm text-gray-700" data-user-name>Usuário</span>
           </div>
 
           <button data-logout class="flex items-center space-x-1 px-3 py-2 text-sm text-gray-700 hover:text-red-600 hover:bg-gray-100 rounded-md">
@@ -64,7 +64,7 @@
           </div>
         </div>
 
-        <div id="comments-message" class="px-6 py-6 text-sm text-gray-500 border-b border-gray-200">Carregando comentarios...</div>
+        <div id="comments-message" class="px-6 py-6 text-sm text-gray-500 border-b border-gray-200">Carregando comentários...</div>
         <div id="comments-list" class="px-6 py-6 space-y-4 bg-gray-50 hidden"></div>
 
         <div class="px-6 py-6 border-t border-gray-200 bg-white">
@@ -92,8 +92,16 @@
 
   <script src="../scripts/app.js"></script>
   <script src="../scripts/pages/comentarios.js"></script>
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget("https://vlibras.gov.br/app");
+  </script>
 </body>
 </html>
-
-
 

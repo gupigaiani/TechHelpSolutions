@@ -13,10 +13,14 @@
       if (normalized.includes("alta")) {
         return "bg-red-100 text-red-800";
       }
-      if (normalized.includes("mÃ©dia")) {
+      if (normalized.includes("média") || normalized.includes("media")) {
         return "bg-yellow-100 text-yellow-800";
       }
       return "bg-green-100 text-green-800";
+    }
+
+    function isOpenStatus(statusName) {
+      return (statusName || "").trim().toLowerCase().includes("aberto");
     }
 
     function getStatusClasses(statusName) {
@@ -72,6 +76,12 @@
       techMessage.classList.add("hidden");
       techTicketList.classList.remove("hidden");
       techTicketList.innerHTML = chamados.map((chamado) => `
+        ${(() => {
+          const canEdit = isOpenStatus(chamado.status?.nome);
+          const editTitle = canEdit
+            ? "Editar chamado"
+            : "Somente chamados com status Aberto podem ser editados";
+          return `
         <div class="px-6 py-4 hover:bg-gray-50 flex justify-between gap-4 flex-col lg:flex-row">
           <div>
             <div class="flex items-center flex-wrap gap-2 mb-2">
@@ -107,7 +117,7 @@
               </svg>
               <span>${chamado.tecnicoId ? "Assumido" : "Assumir"}</span>
             </button>
-            <button data-action="editar" data-id="${chamado.id}" class="inline-flex items-center justify-center gap-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+            <button data-action="editar" data-id="${chamado.id}" title="${editTitle}" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg ${canEdit ? "bg-gray-600 text-white hover:bg-gray-700" : "bg-gray-200 text-gray-400 cursor-not-allowed"}" ${canEdit ? "" : "disabled"}>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="text-white shrink-0">
@@ -127,6 +137,8 @@
             </button>
           </div>
         </div>
+      `;
+        })()}
       `).join("");
     }
 
@@ -193,6 +205,11 @@
       const chamadoId = button.dataset.id;
       const originalLabel = button.textContent.trim();
 
+      if (action === "editar") {
+        await handleAction(action, chamadoId);
+        return;
+      }
+
       try {
         button.disabled = true;
         button.textContent = "Processando...";
@@ -221,4 +238,3 @@
       }
     })();
   
-

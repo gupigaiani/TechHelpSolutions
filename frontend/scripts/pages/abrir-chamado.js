@@ -31,6 +31,21 @@
       }
     }
 
+    function isOpenStatus(statusName) {
+      return (statusName || "").trim().toLowerCase().includes("aberto");
+    }
+
+    function disableEditing(message) {
+      showMessage(message, "error");
+      submitButton.disabled = true;
+      submitLabel.textContent = "Salvar Alterações";
+      Array.from(form.elements).forEach((field) => {
+        if (field instanceof HTMLElement && field !== backButton && field !== cancelButton) {
+          field.disabled = true;
+        }
+      });
+    }
+
     function fillSelect(select, items, placeholder) {
       if (!items.length) {
         select.innerHTML = `<option value="">${placeholder}</option>`;
@@ -68,6 +83,11 @@
 
       if (!response.ok || !data) {
         throw new Error(typeof data === "string" ? data : "Nao foi possivel carregar o chamado para edicao.");
+      }
+
+      if (!isOpenStatus(data.status?.nome)) {
+        disableEditing("Somente chamados com status Aberto podem ser editados.");
+        return;
       }
 
       document.getElementById("title").value = data.titulo || "";
@@ -143,4 +163,3 @@
       }
     })();
   
-

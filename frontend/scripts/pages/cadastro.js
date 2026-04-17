@@ -25,7 +25,7 @@
       const confirmarSenha = document.getElementById("confirmar-senha").value;
 
       if (senha !== confirmarSenha) {
-        showMessage("As senhas nÃ£o conferem.", "error");
+        showMessage("As senhas não conferem.", "error");
         return;
       }
 
@@ -44,7 +44,7 @@
         const rawText = await response.text();
 
         if (!response.ok) {
-          throw new Error(rawText || "NÃ£o foi possÃ­vel concluir o cadastro.");
+          throw new Error(rawText || "Não foi possível concluir o cadastro.");
         }
 
         showMessage("Cadastro realizado com sucesso. Você será redirecionado para o login.", "success");
@@ -61,4 +61,3 @@
       }
     });
   
-

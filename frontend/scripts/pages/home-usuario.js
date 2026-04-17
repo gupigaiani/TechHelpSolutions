@@ -25,11 +25,15 @@
         return "bg-red-100 text-red-800";
       }
 
-      if (normalized.includes("media") || normalized.includes("mÃ©dia")) {
+      if (normalized.includes("media") || normalized.includes("média")) {
         return "bg-yellow-100 text-yellow-800";
       }
 
       return "bg-green-100 text-green-800";
+    }
+
+    function isOpenStatus(statusName) {
+      return (statusName || "").trim().toLowerCase().includes("aberto");
     }
 
     function getStatusIcon(statusName) {
@@ -65,7 +69,7 @@
       ticketsTotal.textContent = `${chamados.length} ${chamados.length === 1 ? "item" : "itens"}`;
 
       if (!chamados.length) {
-        ticketsMessage.textContent = "Voce ainda nao abriu nenhum chamado.";
+        ticketsMessage.textContent = "Você ainda não abriu nenhum chamado.";
         ticketsMessage.classList.remove("hidden");
         ticketsList.classList.add("hidden");
         return;
@@ -74,6 +78,15 @@
       ticketsMessage.classList.add("hidden");
       ticketsList.classList.remove("hidden");
       ticketsList.innerHTML = chamados.map((chamado) => `
+        ${(() => {
+          const canEdit = isOpenStatus(chamado.status?.nome);
+          const editClasses = canEdit
+            ? "bg-gray-600 text-white hover:bg-gray-700"
+            : "bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none";
+          const editTitle = canEdit
+            ? "Editar chamado"
+            : "Somente chamados com status Aberto podem ser editados";
+          return `
         <div class="px-6 py-4 hover:bg-gray-50">
           <div class="flex justify-between gap-4">
             <div class="flex space-x-4">
@@ -102,7 +115,7 @@
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-icon lucide-message-square"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/></svg>
                       <span>Abrir Comentários</span>
                     </a>
-                    <a href="./abrir-chamado.html?id=${chamado.id}" class="inline-flex items-center justify-center gap-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 text-sm font-medium">
+                    <a href="./abrir-chamado.html?id=${chamado.id}" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${editClasses}" ${canEdit ? "" : "aria-disabled=\"true\" tabindex=\"-1\""} title="${editTitle}">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -116,6 +129,8 @@
             </div>
           </div>
         </div>
+      `;
+        })()}
       `).join("");
 
       const countByStatus = chamados.reduce((acc, chamado) => {
@@ -161,4 +176,3 @@
       await loadTickets();
     })();
   
-

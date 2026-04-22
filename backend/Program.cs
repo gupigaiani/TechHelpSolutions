@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
-using UsuariosApi.Authorization;
 using TechHelpSolutions.Data;
 using TechHelpSolutions.Services;
 
@@ -23,8 +22,6 @@ builder.Services.AddScoped<ChamadoService>();
 builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-builder.Services.AddSingleton<IAuthorizationHandler, IdadeAuthorization>();
 
 builder.Services.AddAuthentication(options =>
 {

@@ -1,89 +1,78 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Tecnico</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="../styles/common.css">
   <link rel="stylesheet" href="../styles/pages/home-tecnico.css">
 </head>
-<body class="bg-gray-50 min-h-screen">
-  <header class="bg-white shadow-sm border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16">
-        <div class="flex items-center space-x-8">
-          <a href="./home-tecnico.html" class="text-xl font-bold text-blue-600">
-            TechHelp Solutions
-          </a>
+<body class="app-body">
+  <header class="topbar">
+    <div class="topbar__inner">
+      <div class="topbar__brand">
+        <a href="./home-tecnico.html" class="brand-link">TechHelp Solutions</a>
+      </div>
+
+      <div class="topbar__actions">
+        <div class="user-chip">
+          <div class="user-chip__avatar" data-user-initials>NT</div>
+          <span class="user-chip__name" data-user-name>Nome Tecnico</span>
         </div>
 
-        <div class="flex items-center space-x-4">
-          <div class="flex items-center space-x-2">
-            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium" data-user-initials>
-              NT
-            </div>
-            <span class="text-sm text-gray-700" data-user-name>Nome Tecnico</span>
-          </div>
-
-          <button data-logout class="flex items-center space-x-1 px-3 py-2 text-sm text-gray-700 hover:text-red-600 hover:bg-gray-100 rounded-md">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m16 17 5-5-5-5"></path>
-              <path d="M21 12H9"></path>
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            </svg>
-            Sair
-          </button>
-        </div>
+        <button data-logout class="button button--danger-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m16 17 5-5-5-5"></path>
+            <path d="M21 12H9"></path>
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          </svg>
+          <span>Sair</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="space-y-6">
-      <h1 class="text-3xl font-bold text-gray-900">Dashboard do Técnico</h1>
+  <main class="page-shell">
+    <div class="tech-dashboard">
+      <section class="section-heading">
+        <h1 class="section-heading__title">Dashboard do Técnico</h1>
+      </section>
 
-      <div class="bg-white rounded-lg shadow-sm border p-4">
-        <div class="flex items-center gap-2 mb-4 text-gray-700">
+      <section class="surface-card tech-filter-card">
+        <div class="tech-filter-card__header">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z" />
           </svg>
-          <span class="text-sm font-medium">Filtros</span>
+          <span>Filtros</span>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label for="priority-filter" class="block text-sm font-medium text-gray-700 mb-2">
-              Prioridade
-            </label>
-            <select id="priority-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+        <div class="tech-filter-grid">
+          <div class="field">
+            <label for="priority-filter" class="field__label">Prioridade</label>
+            <select id="priority-filter" class="field__select">
               <option value="">Todas</option>
             </select>
           </div>
 
-          <div>
-            <label for="status-filter" class="block text-sm font-medium text-gray-700 mb-2">
-              Status
-            </label>
-            <select id="status-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+          <div class="field">
+            <label for="status-filter" class="field__label">Status</label>
+            <select id="status-filter" class="field__select">
               <option value="">Todos</option>
             </select>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="bg-white rounded-lg shadow-sm border">
-        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between gap-4">
-          <h2 class="text-lg font-semibold text-gray-900">
-            Chamados
-          </h2>
-          <span id="tech-total" class="text-sm text-gray-500">0 itens</span>
+      <section class="list-panel">
+        <div class="list-panel__header">
+          <h2>Chamados</h2>
+          <span id="tech-total" class="section-heading__subtitle">0 itens</span>
         </div>
 
-        <div id="tech-message" class="px-6 py-6 text-sm text-gray-500">Carregando chamados...</div>
-        <div id="tech-ticket-list" class="divide-y divide-gray-200 hidden"></div>
-      </div>
+        <div id="tech-message" class="list-panel__message">Carregando chamados...</div>
+        <div id="tech-ticket-list" class="list-panel__content tech-ticket-list hidden"></div>
+      </section>
     </div>
   </main>
 
@@ -101,5 +90,3 @@
   </script>
 </body>
 </html>
-
-

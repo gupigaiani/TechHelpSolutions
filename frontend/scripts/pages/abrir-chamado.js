@@ -1,165 +1,159 @@
-﻿    const app = window.TechHelpApp;
-    const form = document.getElementById("ticket-form");
-    const categorySelect = document.getElementById("category");
-    const prioritySelect = document.getElementById("priority");
-    const submitButton = document.getElementById("submit-button");
-    const submitLabel = document.getElementById("submit-label");
-    const cancelButton = document.getElementById("cancel-button");
-    const backButton = document.getElementById("back-button");
-    const formMessage = document.getElementById("form-message");
-    const pageTitle = document.getElementById("page-title");
-    const headerHomeLink = document.getElementById("header-home-link");
-    const ticketId = new URLSearchParams(window.location.search).get("id");
+const app = window.TechHelpApp;
+const form = document.getElementById("ticket-form");
+const categorySelect = document.getElementById("category");
+const prioritySelect = document.getElementById("priority");
+const submitButton = document.getElementById("submit-button");
+const submitLabel = document.getElementById("submit-label");
+const cancelButton = document.getElementById("cancel-button");
+const backButton = document.getElementById("back-button");
+const formMessage = document.getElementById("form-message");
+const pageTitle = document.getElementById("page-title");
+const headerHomeLink = document.getElementById("header-home-link");
+const ticketId = new URLSearchParams(window.location.search).get("id");
 
-    let currentUser = null;
+let currentUser = null;
 
-    function getHomePath() {
-      return currentUser?.role === "Tecnico" ? "./home-tecnico.html" : "./home-usuario.html";
+function getHomePath() {
+  return currentUser?.role === "Tecnico" ? "./home-tecnico.html" : "./home-usuario.html";
+}
+
+function goBackHome() {
+  window.location.href = getHomePath();
+}
+
+function showMessage(text, type) {
+  formMessage.textContent = text;
+  formMessage.className = `form-message ${type === "error" ? "form-message--error" : "form-message--success"}`;
+}
+
+function isOpenStatus(statusName) {
+  return (statusName || "").trim().toLowerCase().includes("aberto");
+}
+
+function disableEditing(message) {
+  showMessage(message, "error");
+  submitButton.disabled = true;
+  submitLabel.textContent = "Salvar Alterações";
+  Array.from(form.elements).forEach((field) => {
+    if (field instanceof HTMLElement && field !== backButton && field !== cancelButton) {
+      field.disabled = true;
     }
+  });
+}
 
-    function goBackHome() {
-      window.location.href = getHomePath();
-    }
+function fillSelect(select, items, placeholder) {
+  if (!items.length) {
+    select.innerHTML = `<option value="">${placeholder}</option>`;
+    select.disabled = true;
+    return;
+  }
 
-    function showMessage(text, type) {
-      formMessage.textContent = text;
-      formMessage.className = "text-sm rounded-md px-3 py-2";
-      if (type === "error") {
-        formMessage.classList.add("bg-red-50", "text-red-700", "border", "border-red-200");
-      } else {
-        formMessage.classList.add("bg-green-50", "text-green-700", "border", "border-green-200");
-      }
-    }
+  select.disabled = false;
+  select.innerHTML = `
+    <option value="">Selecione</option>
+    ${items.map((item) => `<option value="${item.id}">${item.nome}</option>`).join("")}
+  `;
+}
 
-    function isOpenStatus(statusName) {
-      return (statusName || "").trim().toLowerCase().includes("aberto");
-    }
+async function loadCatalogs() {
+  const [categoriesResponse, prioritiesResponse] = await Promise.all([
+    app.apiFetch("/api/catalogos/categorias"),
+    app.apiFetch("/api/catalogos/prioridades")
+  ]);
 
-    function disableEditing(message) {
-      showMessage(message, "error");
-      submitButton.disabled = true;
-      submitLabel.textContent = "Salvar Alterações";
-      Array.from(form.elements).forEach((field) => {
-        if (field instanceof HTMLElement && field !== backButton && field !== cancelButton) {
-          field.disabled = true;
-        }
-      });
-    }
+  const categories = await app.readResponse(categoriesResponse);
+  const priorities = await app.readResponse(prioritiesResponse);
 
-    function fillSelect(select, items, placeholder) {
-      if (!items.length) {
-        select.innerHTML = `<option value="">${placeholder}</option>`;
-        select.disabled = true;
-        return;
-      }
+  if (!categoriesResponse.ok || !prioritiesResponse.ok) {
+    throw new Error("Nao foi possivel carregar as opcoes do formulario.");
+  }
 
-      select.disabled = false;
-      select.innerHTML = `
-        <option value="">Selecione</option>
-        ${items.map((item) => `<option value="${item.id}">${item.nome}</option>`).join("")}
-      `;
-    }
+  fillSelect(categorySelect, Array.isArray(categories) ? categories : [], "Nenhuma categoria disponivel");
+  fillSelect(prioritySelect, Array.isArray(priorities) ? priorities : [], "Nenhuma prioridade disponivel");
+}
 
-    async function loadCatalogs() {
-      const [categoriesResponse, prioritiesResponse] = await Promise.all([
-        app.apiFetch("/api/catalogos/categorias"),
-        app.apiFetch("/api/catalogos/prioridades")
-      ]);
+async function loadTicketForEdit(id) {
+  const response = await app.apiFetch(`/api/chamados/${id}`);
+  const data = await app.readResponse(response);
 
-      const categories = await app.readResponse(categoriesResponse);
-      const priorities = await app.readResponse(prioritiesResponse);
+  if (!response.ok || !data) {
+    throw new Error(typeof data === "string" ? data : "Nao foi possivel carregar o chamado para edicao.");
+  }
 
-      if (!categoriesResponse.ok || !prioritiesResponse.ok) {
-        throw new Error("Nao foi possivel carregar as opcoes do formulario.");
-      }
+  if (!isOpenStatus(data.status?.nome)) {
+    disableEditing("Somente chamados com status Aberto podem ser editados.");
+    return;
+  }
 
-      fillSelect(categorySelect, Array.isArray(categories) ? categories : [], "Nenhuma categoria disponivel");
-      fillSelect(prioritySelect, Array.isArray(priorities) ? priorities : [], "Nenhuma prioridade disponivel");
-    }
+  document.getElementById("title").value = data.titulo || "";
+  document.getElementById("description").value = data.descricao || "";
+  categorySelect.value = String(data.categoriaId || "");
+  prioritySelect.value = String(data.prioridadeId || "");
+}
 
-    async function loadTicketForEdit(id) {
-      const response = await app.apiFetch(`/api/chamados/${id}`);
-      const data = await app.readResponse(response);
+backButton.addEventListener("click", goBackHome);
+cancelButton.addEventListener("click", goBackHome);
 
-      if (!response.ok || !data) {
-        throw new Error(typeof data === "string" ? data : "Nao foi possivel carregar o chamado para edicao.");
-      }
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  formMessage.className = "form-message hidden";
+  submitButton.disabled = true;
+  submitLabel.textContent = ticketId ? "Salvando..." : "Enviando...";
 
-      if (!isOpenStatus(data.status?.nome)) {
-        disableEditing("Somente chamados com status Aberto podem ser editados.");
-        return;
-      }
+  try {
+    const payload = {
+      titulo: document.getElementById("title").value.trim(),
+      descricao: document.getElementById("description").value.trim(),
+      categoriaId: Number(categorySelect.value),
+      prioridadeId: Number(prioritySelect.value)
+    };
 
-      document.getElementById("title").value = data.titulo || "";
-      document.getElementById("description").value = data.descricao || "";
-      categorySelect.value = String(data.categoriaId || "");
-      prioritySelect.value = String(data.prioridadeId || "");
-    }
-
-    backButton.addEventListener("click", goBackHome);
-    cancelButton.addEventListener("click", goBackHome);
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      formMessage.className = "hidden";
-      submitButton.disabled = true;
-      submitLabel.textContent = ticketId ? "Salvando..." : "Enviando...";
-
-      try {
-        const payload = {
-          titulo: document.getElementById("title").value.trim(),
-          descricao: document.getElementById("description").value.trim(),
-          categoriaId: Number(categorySelect.value),
-          prioridadeId: Number(prioritySelect.value)
-        };
-
-        const response = await app.apiFetch(ticketId ? `/api/chamados/${ticketId}` : "/api/chamados", {
-          method: ticketId ? "PUT" : "POST",
-          body: JSON.stringify(payload)
-        });
-
-        const data = await app.readResponse(response);
-        if (!response.ok) {
-          throw new Error(typeof data === "string" ? data : (ticketId ? "Nao foi possivel atualizar o chamado." : "Nao foi possivel abrir o chamado."));
-        }
-
-        showMessage(ticketId ? "Chamado atualizado com sucesso. Redirecionando..." : "Chamado aberto com sucesso. Redirecionando...", "success");
-        setTimeout(goBackHome, 1200);
-      } catch (error) {
-        showMessage(error.message || (ticketId ? "Erro ao atualizar chamado." : "Erro ao abrir chamado."), "error");
-      } finally {
-        submitButton.disabled = false;
-        submitLabel.textContent = ticketId ? "Salvar Alterações" : "Enviar";
-      }
+    const response = await app.apiFetch(ticketId ? `/api/chamados/${ticketId}` : "/api/chamados", {
+      method: ticketId ? "PUT" : "POST",
+      body: JSON.stringify(payload)
     });
 
-    (async () => {
-      const user = await app.requireAuth(["Usuario", "Tecnico"]);
-      if (!user) {
-        return;
-      }
+    const data = await app.readResponse(response);
+    if (!response.ok) {
+      throw new Error(typeof data === "string" ? data : (ticketId ? "Nao foi possivel atualizar o chamado." : "Nao foi possivel abrir o chamado."));
+    }
 
-      currentUser = user;
-      headerHomeLink.href = getHomePath();
-      app.attachLogout();
+    showMessage(ticketId ? "Chamado atualizado com sucesso. Redirecionando..." : "Chamado aberto com sucesso. Redirecionando...", "success");
+    setTimeout(goBackHome, 1200);
+  } catch (error) {
+    showMessage(error.message || (ticketId ? "Erro ao atualizar chamado." : "Erro ao abrir chamado."), "error");
+  } finally {
+    submitButton.disabled = false;
+    submitLabel.textContent = ticketId ? "Salvar Alterações" : "Enviar";
+  }
+});
 
-      try {
-        await loadCatalogs();
+(async () => {
+  const user = await app.requireAuth(["Usuario", "Tecnico"]);
+  if (!user) {
+    return;
+  }
 
-        if (!ticketId && user.role !== "Usuario") {
-          pageTitle.textContent = "Abrir Chamado";
-          showMessage("Somente usuarios podem abrir novos chamados.", "error");
-          submitButton.disabled = true;
-          return;
-        }
+  currentUser = user;
+  headerHomeLink.href = getHomePath();
+  app.attachLogout();
 
-        if (ticketId) {
-          pageTitle.textContent = "Editar Chamado";
-          submitLabel.textContent = "Salvar Alterações";
-          await loadTicketForEdit(ticketId);
-        }
-      } catch (error) {
-        showMessage(error.message || "Erro ao carregar o formulario.", "error");
-      }
-    })();
-  
+  try {
+    await loadCatalogs();
+
+    if (!ticketId && user.role !== "Usuario") {
+      pageTitle.textContent = "Abrir Chamado";
+      showMessage("Somente usuarios podem abrir novos chamados.", "error");
+      submitButton.disabled = true;
+      return;
+    }
+
+    if (ticketId) {
+      pageTitle.textContent = "Editar Chamado";
+      submitLabel.textContent = "Salvar Alterações";
+      await loadTicketForEdit(ticketId);
+    }
+  } catch (error) {
+    showMessage(error.message || "Erro ao carregar o formulario.", "error");
+  }
+})();

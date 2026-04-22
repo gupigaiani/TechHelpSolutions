@@ -1,46 +1,39 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Comentários - TechHelp</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="../styles/common.css">
   <link rel="stylesheet" href="../styles/pages/comentarios.css">
 </head>
-<body class="bg-gray-50 min-h-screen">
-  <header class="bg-white shadow-sm border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16">
-        <a id="header-home-link" href="./home-usuario.html" class="text-xl font-bold text-blue-600">
-          TechHelp Solutions
-        </a>
+<body class="app-body">
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a id="header-home-link" href="./home-usuario.html" class="brand-link">TechHelp Solutions</a>
 
-        <div class="flex items-center space-x-4">
-          <div class="flex items-center space-x-2">
-            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium" data-user-initials>
-              TH
-            </div>
-            <span class="text-sm text-gray-700" data-user-name>Usuário</span>
-          </div>
-
-          <button data-logout class="flex items-center space-x-1 px-3 py-2 text-sm text-gray-700 hover:text-red-600 hover:bg-gray-100 rounded-md">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m16 17 5-5-5-5"></path>
-              <path d="M21 12H9"></path>
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            </svg>
-            <span>Sair</span>
-          </button>
+      <div class="topbar__actions">
+        <div class="user-chip">
+          <div class="user-chip__avatar" data-user-initials>TH</div>
+          <span class="user-chip__name" data-user-name>Usuário</span>
         </div>
+
+        <button data-logout class="button button--danger-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m16 17 5-5-5-5"></path>
+            <path d="M21 12H9"></path>
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          </svg>
+          <span>Sair</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="max-w-4xl mx-auto">
-      <button id="back-button" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-6">
+  <main class="page-shell page-shell--md">
+    <div class="comments-page">
+      <button id="back-button" class="back-link">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path d="m12 19-7-7 7-7"></path>
           <path d="M19 12H5"></path>
@@ -48,45 +41,47 @@
         <span>Voltar</span>
       </button>
 
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-200">
-          <div class="flex items-start justify-between gap-4 flex-wrap">
+      <section class="list-panel">
+        <div class="comments-card__header">
+          <div class="comments-card__header-layout">
             <div>
-              <p id="ticket-number" class="text-sm text-gray-500">Chamado</p>
-              <h1 id="ticket-title" class="text-2xl font-bold text-gray-900">Carregando...</h1>
-              <p id="ticket-description" class="text-sm text-gray-600 mt-2"></p>
+              <p id="ticket-number" class="comments-card__number">Chamado</p>
+              <h1 id="ticket-title" class="comments-card__title">Carregando...</h1>
+              <p id="ticket-description" class="comments-card__description"></p>
             </div>
-            <div class="flex flex-wrap gap-2 text-sm">
-              <span id="ticket-category" class="inline-flex items-center rounded-full px-3 py-1 bg-gray-100 text-gray-700">-</span>
-              <span id="ticket-priority" class="inline-flex items-center rounded-full px-3 py-1 bg-gray-100 text-gray-700">-</span>
-              <span id="ticket-status" class="inline-flex items-center rounded-full px-3 py-1 bg-gray-100 text-gray-700">-</span>
+            <div class="comments-card__badges">
+              <span id="ticket-category" class="badge badge--neutral">-</span>
+              <span id="ticket-priority" class="badge badge--neutral">-</span>
+              <span id="ticket-status" class="badge badge--neutral">-</span>
             </div>
           </div>
         </div>
 
-        <div id="comments-message" class="px-6 py-6 text-sm text-gray-500 border-b border-gray-200">Carregando comentários...</div>
-        <div id="comments-list" class="px-6 py-6 space-y-4 bg-gray-50 hidden"></div>
+        <div id="comments-message" class="list-panel__message">Carregando comentários...</div>
+        <div class="comment-thread">
+          <div id="comments-list" class="comment-thread__list hidden"></div>
+        </div>
 
-        <div class="px-6 py-6 border-t border-gray-200 bg-white">
-          <form id="comment-form" class="space-y-4">
-            <div>
-              <label for="comment-message" class="block text-sm font-medium text-gray-700 mb-2">Novo comentário</label>
-              <textarea id="comment-message" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Escreva uma mensagem..."></textarea>
+        <div class="comments-form">
+          <form id="comment-form" class="form-stack">
+            <div class="field">
+              <label for="comment-message" class="field__label">Novo comentário</label>
+              <textarea id="comment-message" rows="4" required class="field__textarea field__textarea--fixed" placeholder="Escreva uma mensagem..."></textarea>
             </div>
 
-            <div class="flex items-center justify-between gap-3 flex-wrap">
-              <p id="form-message" class="hidden text-sm rounded-md px-3 py-2"></p>
-              <button id="submit-button" type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <div class="comments-form__footer">
+              <p id="form-message" class="form-message hidden"></p>
+              <button id="submit-button" type="submit" class="button button--primary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"></path>
+                  <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.1z"></path>
                   <path d="m21.854 2.147-10.94 10.939"></path>
                 </svg>
-                <span>Enviar Comentário</span>
+                <span>Enviar comentário</span>
               </button>
             </div>
           </form>
         </div>
-      </div>
+      </section>
     </div>
   </main>
 
@@ -104,4 +99,3 @@
   </script>
 </body>
 </html>
-

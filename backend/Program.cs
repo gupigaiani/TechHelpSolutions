@@ -12,11 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-var connString = builder.Configuration["ConnectionStrings:UsuarioConnection"];
+var connString = builder.Configuration.GetConnectionString("UsuarioConnection")
+    ?? throw new InvalidOperationException("A string de conexão 'UsuarioConnection' não foi configurada.");
 var key = "NSIONFANSDFONAPSMFDPKSDBHPIFNSNOVASNDFIW";
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connString, ServerVersion.AutoDetect(connString)));
+    options.UseSqlServer(connString));
 
 builder.Services.AddScoped<ChamadoService>();
 builder.Services.AddScoped<AuthService>();

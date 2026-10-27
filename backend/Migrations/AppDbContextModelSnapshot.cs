@@ -37,6 +37,28 @@ namespace UsuariosApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categorias");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nome = "Hardware"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nome = "Software"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nome = "Rede"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Nome = "Outros"
+                        });
                 });
 
             modelBuilder.Entity("TechHelpSolutions.Models.Chamado", b =>
@@ -89,6 +111,44 @@ namespace UsuariosApi.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Chamados");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoriaId = 1,
+                            DataAbertura = new DateTime(2026, 10, 27, 9, 34, 13, 309, DateTimeKind.Unspecified).AddTicks(7614),
+                            DataFechamento = new DateTime(2026, 10, 27, 9, 38, 34, 156, DateTimeKind.Unspecified).AddTicks(1336),
+                            Descricao = "A impressora não está funcionando desde ontem.",
+                            PrioridadeId = 1,
+                            StatusId = 3,
+                            TecnicoId = 2,
+                            Titulo = "Impressora não funciona",
+                            UsuarioId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoriaId = 2,
+                            DataAbertura = new DateTime(2026, 10, 27, 9, 36, 26, 667, DateTimeKind.Unspecified).AddTicks(9442),
+                            Descricao = "Estou tentando acessar o portal da empresa e dá acesso negado.",
+                            PrioridadeId = 2,
+                            StatusId = 2,
+                            TecnicoId = 2,
+                            Titulo = "Portal da empresa está fora",
+                            UsuarioId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoriaId = 3,
+                            DataAbertura = new DateTime(2026, 10, 27, 9, 37, 16, 917, DateTimeKind.Unspecified).AddTicks(6033),
+                            Descricao = "Já tem duas horas que a internet não funciona.",
+                            PrioridadeId = 3,
+                            StatusId = 1,
+                            Titulo = "Wi-Fi não funciona",
+                            UsuarioId = 1
+                        });
                 });
 
             modelBuilder.Entity("TechHelpSolutions.Models.Comentario", b =>
@@ -119,6 +179,24 @@ namespace UsuariosApi.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Comentarios");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ChamadoId = 1,
+                            DataEnvio = new DateTime(2026, 10, 27, 9, 38, 19, 763, DateTimeKind.Unspecified).AddTicks(1189),
+                            Mensagem = "Olá João!",
+                            UsuarioId = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ChamadoId = 1,
+                            DataEnvio = new DateTime(2026, 10, 27, 9, 38, 54, 367, DateTimeKind.Unspecified).AddTicks(1343),
+                            Mensagem = "Olá Gabriel!",
+                            UsuarioId = 1
+                        });
                 });
 
             modelBuilder.Entity("TechHelpSolutions.Models.Prioridade", b =>
@@ -136,6 +214,23 @@ namespace UsuariosApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Prioridades");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nome = "Baixa"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nome = "Média"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nome = "Alta"
+                        });
                 });
 
             modelBuilder.Entity("TechHelpSolutions.Models.Status", b =>
@@ -153,6 +248,23 @@ namespace UsuariosApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Status");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nome = "Aberto"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nome = "Em andamento"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nome = "Resolvido"
+                        });
                 });
 
             modelBuilder.Entity("TechHelpSolutions.Models.Usuario", b =>
@@ -185,6 +297,35 @@ namespace UsuariosApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DataCriacao = new DateTime(2026, 10, 27, 9, 31, 35, 292, DateTimeKind.Unspecified).AddTicks(9494),
+                            Email = "usuario@gmail.com",
+                            Nome = "João da Silva",
+                            Senha = "Senha123",
+                            Tipo = "Usuario"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DataCriacao = new DateTime(2026, 10, 27, 9, 32, 2, 671, DateTimeKind.Unspecified).AddTicks(1620),
+                            Email = "tecnico@gmail.com",
+                            Nome = "Gabriel Costa",
+                            Senha = "Senha123",
+                            Tipo = "Tecnico"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DataCriacao = new DateTime(2026, 10, 27, 9, 32, 31, 667, DateTimeKind.Unspecified).AddTicks(1228),
+                            Email = "gestor@gmail.com",
+                            Nome = "Luiz Silveira",
+                            Senha = "Senha123",
+                            Tipo = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("TechHelpSolutions.Models.Chamado", b =>
